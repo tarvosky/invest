@@ -1,0 +1,53 @@
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.DS_Store
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+**/public/passport/destination/
+**/public/passport/final/
+**/public/tax/completed/
+**/public/custom/
+**/public/zip/
+**/public/license/barcodes/
+**/public/license/destination/
+**/public/license/final/
+**/public/license/test/
+**/public/logos/customize/
+**/public/ssn/destination/
+**/public/ssn/final/
+**/public/voidchecks/destination/
+**/public/voidchecks/final/
+**/public/rental/barcodes/
+**/public/rental/landlord_sign/
+**/public/rental/sign/
+**/public/rental/completed/
+**/public/divorce/destination/
+**/public/lawyer_license/destination/
+**/public/will/sign/
+
+/bootstrap
+**/public/utilities/completed/
+**/public/.DS_Store
+
+
+	/public/.DS_Store
+	/public/license/.DS_Store
+	/public/license/barcodes/.DS_Store
+	/public/license/barcodes/additional/.DS_Store
+	/public/license/destination/.DS_Store
+	/public/license/templates/.DS_Store
+	/public/license/templates/GA/.DS_Store
+	/public/license/templates/GA/Georgia back.png
+	/public/passport/.DS_Store
+	/public/ssn/.DS_Store
+	/public/zip/.DS_Store
+	/resources/.DS_Store
+	/resources/views/.DS_Store

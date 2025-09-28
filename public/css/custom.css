@@ -1,0 +1,8 @@
+
+
+
+/* date picker month and year*/
+.ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year {
+    width: 45%;
+    color: #000;
+}
