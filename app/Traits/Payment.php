@@ -81,15 +81,6 @@ trait Payment {
 
 
 
-
-
-
-
-
-
-
-
-
     public function remove_from_wallet_and_update($user,$charge){
 
         $bal = $user->wallet - $charge;

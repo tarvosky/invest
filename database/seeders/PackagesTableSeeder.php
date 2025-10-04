@@ -17,6 +17,14 @@ class PackagesTableSeeder extends Seeder
     {
         $packages = [
             [
+                'name' => 'test Package',
+                'price' => 10.00,
+                'roi' => 2.00,
+                'duration_days' => 30,
+                'support_details' => 'Support Response within 2 days',
+                'commission' => 4.00,
+            ],
+            [
                 'name' => 'Bronze Package',
                 'price' => 10000.00,
                 'roi' => 20.00,
