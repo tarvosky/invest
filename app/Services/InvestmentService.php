@@ -18,37 +18,38 @@ class InvestmentService
      */
     public function processDailyPayouts(User $user)
     {
-        // Get all active investments for the user
         $investments = $user->investments()->where('status', 'active')->get();
 
         foreach ($investments as $investment) {
-            // Determine the date from which to start processing payouts
-            $lastPayoutDate = $investment->last_payout_date ?
-                Carbon::parse($investment->last_payout_date)->startOfDay() :
-                Carbon::parse($investment->start_date)->startOfDay();
+            $lastPayoutDate = $investment->last_payout_date
+                ? Carbon::parse($investment->last_payout_date)->startOfDay()
+                : Carbon::parse($investment->start_date)->startOfDay();
 
             $today = Carbon::today();
 
-            // Loop through each day since the last payout date until today
             while ($lastPayoutDate->lt($today)) {
-                $lastPayoutDate->addDay();
-
-                // Calculate the daily interest for the current day
-                // The ROI is a percentage (e.g., 20), so we divide by 100
-                // We're assuming a 30-day payout period based on your original ROI
                 $dailyInterestRate = $investment->package->roi / 100 / $investment->package->duration_days;
+
+                // Simple interest (based on initial deposit)
                 $dailyInterestAmount = $investment->initial_deposit * $dailyInterestRate;
 
-                // Add the daily interest to the user's wallet
-                // This uses your existing function, ensuring history is also updated
-                $this->addDailyInterestToWallet($user, $dailyInterestAmount, $investment);
+                // Record the payout only if it doesn't exist
+                if (!$investment->dailyInterestPayouts()->whereDate('created_at', $lastPayoutDate->toDateString())->exists()) {
+                    $this->addDailyInterestToWallet($user, $dailyInterestAmount, $investment, $lastPayoutDate);
+                }
+
+                // Increment date
+                $lastPayoutDate->addDay();
             }
 
-            // Update the last payout date for the investment to today's date
-            $investment->last_payout_date = now();
+            // Update the investment's last payout date once after all missed days
+            $investment->last_payout_date = $lastPayoutDate->subDay()->toDateString(); // last actual payout day
             $investment->save();
         }
     }
+
+
+
 
     /**
      * Adds the daily interest amount to the user's wallet and records it in history.
@@ -59,19 +60,26 @@ class InvestmentService
      */
     protected function addDailyInterestToWallet(User $user, $amount, $investment)
     {
-        // Add to wallet using your existing function
-        $this->add_to_wallet_and_update($user, $amount);
+        // Only run if today’s payout doesn’t exist yet
+        if (!$investment->dailyInterestPayouts()
+            ->whereDate('created_at', now()->toDateString())
+            ->exists()) {
 
-        // Record the payout in the dedicated payouts table
-        $investment->dailyInterestPayouts()->create([
-            'amount' => $amount,
-        ]);
+            // Add to wallet
+            $this->add_to_wallet_and_update($user, $amount);
 
+            // Record the payout in the dedicated payouts table
+            $investment->dailyInterestPayouts()->create([
+                'amount' => $amount,
+            ]);
 
-        $user->histories()->create([
-            'description' => 'Daily interest payout from ' . $investment->package->name . ' investment.',
-            'balance' => $user->wallet,
-            'ip' => request()->ip(),
-        ]);
+            // Add to user history
+            $user->histories()->create([
+                'description' => 'Daily interest payout from ' . $investment->package->name . ' investment.',
+                'balance' => $user->wallet,
+                'ip' => request()->ip(),
+            ]);
+        }
     }
+
 }

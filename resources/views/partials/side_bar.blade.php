@@ -22,13 +22,13 @@
 
 
         @if(auth()->user()->role == "admin")
-        <li>
-          <a href="{{ asset('admin/announcement/1')}}" >
-            <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>
-            <span class="menu-text">News</span>
-          </a>
-        </li>
-        <li>
+{{--        <li>--}}
+{{--          <a href="{{ asset('admin/announcement/1')}}" >--}}
+{{--            <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>--}}
+{{--            <span class="menu-text">News</span>--}}
+{{--          </a>--}}
+{{--        </li>--}}
+{{--        <li>--}}
         <a href="{{ route('admin.users')}}" >
           <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>
           <span class="menu-text">Users</span>
@@ -58,12 +58,12 @@
           <span class="menu-text">Credit User</span>
         </a>
       </li>
-      <li>
-        <a href="{{ route('admin.edited.picture')}}" >
-          <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>
-          <span class="menu-text">Upload Edited image</span>
-        </a>
-      </li>
+{{--      <li>--}}
+{{--        <a href="{{ route('admin.edited.picture')}}" >--}}
+{{--          <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>--}}
+{{--          <span class="menu-text">Upload Edited image</span>--}}
+{{--        </a>--}}
+{{--      </li>--}}
         @else
 
               <li>
@@ -90,12 +90,12 @@
                       <span class="menu-text">Faq & Support</span>
                   </a>
               </li>
-              <li>
-                  <a href="{{ route('home.packages')}}" >
-                      <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>
-                      <span class="menu-text">Withdrawal</span>
-                  </a>
-              </li>
+{{--              <li>--}}
+{{--                  <a href="{{ route('home.packages')}}" >--}}
+{{--                      <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>--}}
+{{--                      <span class="menu-text">Withdrawal</span>--}}
+{{--                  </a>--}}
+{{--              </li>--}}
 {{--        <li class="has-submenu">--}}
 {{--          <a href="javascript:void(0)" class="submenu-toggle">--}}
 {{--            <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>--}}

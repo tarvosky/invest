@@ -3,6 +3,9 @@
 namespace App\Traits;
 
 use App\Models\Charge;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\referralBonus;
 
@@ -59,10 +62,30 @@ trait Payment {
         return $amount * $price;
     }
 
-    public function USDtoBTC($amount){
-        $price = $this->getBTCPrice("USD");
-        return $amount/$price;
+    private function USDtoBTC($amount)
+    {
+        try {
+            // Check cache first; store for 120 seconds (2 minutes)
+            $btcPrice = Cache::remember('blockonomics_btc_usd', 120, function () {
+                $response = Http::acceptJson()->get('https://www.blockonomics.co/api/price?currency=USD');
+                return $response->json()['price'] ?? 0;
+            });
+
+            if ($btcPrice <= 0) {
+                return 0;
+            }
+
+            $btcValue = $amount / $btcPrice;
+
+            // Display neatly formatted BTC value
+            return number_format($btcValue, 8, '.', '');
+
+        } catch (\Exception $e) {
+            Log::error('BTC conversion failed: ' . $e->getMessage());
+            return 0;
+        }
     }
+
 
 
     public function getIp(){
@@ -95,11 +118,13 @@ trait Payment {
         return false;
     }
 
-    public function add_to_wallet_and_update($user,$cost){
-        $bal = $user->wallet + $cost;
-        $user->wallet = $bal;
+    public function add_to_wallet_and_update($user, $amount)
+    {
+        // assume $user is locked (callers should lock or run inside DB::transaction)
+        $user->wallet += $amount;
         $user->save();
     }
+
 
 
 

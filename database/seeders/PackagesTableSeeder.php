@@ -23,6 +23,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 4.00,
+                'btn_class' => 'btn-danger'
             ],
             [
                 'name' => 'Bronze Package',
@@ -31,6 +32,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 4.00,
+                'btn_class'=> 'btn-danger'
             ],
             [
                 'name' => 'Silver Package',
@@ -39,6 +41,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 3.00,
+                'btn_class' => 'btn-info'
             ],
             [
                 'name' => 'Gold Package',
@@ -47,6 +50,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 2.00,
+                'btn_class' => 'btn-warning'
             ],
             [
                 'name' => 'Platinum Package',
@@ -55,6 +59,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 0.00,
+                'btn_class' => 'btn-success'
             ],
         ];
 

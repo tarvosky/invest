@@ -109,7 +109,18 @@
 
         <!-- Form Card (30%) -->
         <div class="col-md-4 col-sm-12">
-            <div class="widget p-md">
+
+
+            <div class="widget p-md clearfix">
+                <div class="pull-left">
+                    <h3 class="widget-title">Recharge</h3>
+                    <a class="btn btn-primary" href="{{ asset('payment/recharge')}}">Update Balance Now</a>
+                </div>
+                <span class="pull-right fz-lg fw-500 "></span>
+            </div><!-- .widget -->
+
+
+            <div class="widget p-md clearfix">
                 <h4 class="widget-title mb-3">Investment Form</h4>
                 <form method="POST" action="#">
                     @csrf
@@ -130,13 +141,16 @@
                     <button type="submit" class="btn btn-primary btn-block mt-3">Submit</button>
                 </form>
             </div>
+
+
+
         </div>
     </div>
 
 
     <div class="col-md-12 col-sm-12">
         <div class="widget p-md">
-            <h4 class="widget-title mb-3">Payment History</h4>
+            <h4 class="widget-title mb-3">Recent Transactions</h4>
 
     <div class="table-responsive">
         <table id="default-datatable" data-plugin="DataTable" class="table table-striped" cellspacing="0" width="100%">
@@ -149,12 +163,14 @@
             </tr>
             </thead>
             <tbody>
+            @foreach($data as $key => $d)
                 <tr>
-                    <td scope="row">1</td>
-                    <td>created_at</td>
-                    <td>description </td>
-                    <td>$ 200 </td>
+                    <td scope="row">{{$key+1}}</td>
+                    <td>{{ $d->created_at->format('Y-m-d')}}</td>
+                    <td>{{ $d->description}} </td>
+                    <td>${{ number_format($d->balance,2)}} </td>
                 </tr>
+            @endforeach
             </tbody>
         </table>
     </div>
@@ -163,7 +179,7 @@
 
 
 
-    {{--			<div class="col-md-6 col-sm-6">--}}
+{{--    			<div class="col-md-6 col-sm-6">--}}
 {{--				<div class="widget p-md clearfix">--}}
 {{--					<div class="pull-left">--}}
 {{--						<h3 class="widget-title">Welcome to {{ env('APP_NAME') }}</h3>--}}

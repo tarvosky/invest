@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Package;
 use App\Models\Withdrawal;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Custom;
@@ -18,8 +19,10 @@ use App\Mail\Custom as CustomMail;
 use App\Mail\CustomAdmin;
 use App\Mail\PaymentMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Payment as PaymentRecord;
 use Image;
 
 
@@ -45,7 +48,7 @@ class PaymentController extends Controller
 
     public function withdraw()
     {
-        $data = Withdrawal::all();
+        $data = Withdrawal::where("user_id", auth()->user()->id)->get();
         return view('payment.withdraw',compact('data'));
     }
 
@@ -289,7 +292,7 @@ class PaymentController extends Controller
             'amount' => ['required', 'numeric' ]
           ]);
 
-          if($request->amount < 50){
+          if($request->amount < 10){
             return  redirect()->back()->withErrors("Minimum Deposit is $50");
           }
         $code = $this->createInvoice($request->amount);
@@ -314,16 +317,8 @@ class PaymentController extends Controller
     public function ipn(Request $request)
     {
 
+        // http://dl.test/payment/ipn?secret=al9cyT2mBkHm2YN7xxxxxx3433TYHU23ytfa&addr=bc1qnljfcg7efx08t9gkffa6v3rxrgnjagmyw8rnlu&status=2&txid=WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction&value=100000000
 
-
-
-       // http://dl.local/payment/ipn?secret=al9cyT2mBkHm2YN7xxxxxx3433TYHU23sssa&addr=1FNqARc22mKNFiwXctMFbBJmJxfhFajKUP&status=2&txid=WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction&value=20000
-
-     //   $secretlocal = "al9cyT2mBkHm2YN7xxxxxx3433TYHU23sssa"; // Code in the callback, make sure this matches to what youve set
-
-
-        //$secret = $request->secret;
-        // // Get all these values
         $txid = $request->txid;
         $value = $request->value;
         $status = $request->status;
@@ -332,98 +327,134 @@ class PaymentController extends Controller
 
 
 
-        //  Storage::put( 'test/test.txt', "mapping");
-         // Storage::put( 'test/file.txt', $txid." ".$secret." ".$value." ".$addr." ".$status);  // stores in storage folder
-
-        // // Check all are set
-        if(empty($txid) || empty($value) || empty($addr) || empty($secret)){
-            exit();
+        if (empty($txid) || empty($value) || empty($addr) || empty($secret)) {
+            Log::warning('IPN missing fields', $request->all());
+            return response('missing', 400);
         }
 
-        if($secret != config('services.blockonomics.secret_key')){
-            exit();
+        if ($secret != config('services.blockonomics.secret_key')) {
+            Log::warning('IPN invalid secret', ['secret' => $secret]);
+            return response('invalid secret', 403);
         }
 
-        // // Get invoice price
+        try {
+            DB::beginTransaction();
 
-        $infon = Invoice::where('address',$addr)->first();
-        $code = $infon->code;
-        $price = $infon->amount;
-        // Convert price to satoshi for check
-        $price = $this->USDtoBTC($price);
-        $priceSatochi = $price *10000000;
+            $invoice = Invoice::where('address', $addr)->lockForUpdate()->first();
+
+            if (! $invoice) {
+                DB::rollBack();
+                Log::warning('IPN invoice not found for address', ['addr' => $addr]);
+             //   return response('invoice not found', 404);
+            }
+
+            // If invoice already fully processed (status 2) we can ignore duplicate IPN
+            if ($invoice->status == 2) {
+                DB::commit();
+                Log::info('IPN received for already-paid invoice', ['invoice' => $invoice->id, 'txid' => $txid]);
+               // return response('already paid', 200);
+            }
+
+            // convert invoice amount to BTC and sats as you were doing
+            $price = $this->USDtoBTC($invoice->amount);
+            $priceSatoshi = round($price * 10000000); // keep original logic, though double-check units
 
 
-        Log::info('Blockonomics callback data received', [
-            'txid' => $txid,
-            'secret' => $secret,
-            'addr' => $addr,
-            'value' => $value,
-            'status' => $status,
-            'amount' => $infon->amount,
-            'price' => $price
-        ]);
+            Log::info('Blockonomics callback received', [
+                'txid' => $txid,
+                'addr' => $addr,
+                'value' => $value,
+                'status' => $status,
+                'invoice_id' => $invoice->id,
+                'invoice_amount' => $invoice->amount,
+                'price_btc' => $price
+            ]);
+
+            // expired / negative status
+            if ($status < 0) {
+                // Mark invoice expired maybe
+                $invoice->status = $status;
+                $invoice->save();
+                DB::commit();
+                Log::warning('Expired', ['addr' => $addr]);
+                //return response('expired', 200);
+            }
+
+            // check amount paid
+            if ($value < $priceSatoshi) {
+                $invoice->status = -2; // not enough
+                $invoice->save();
+                DB::commit();
+                Log::info('IPN amount too small', ['invoice' => $invoice->id, 'value' => $value, 'expected' => $priceSatoshi]);
+               // return response('insufficient', 200);
+            }
 
 
+            $payment = null;
+            try {
+                $payment = PaymentRecord::create([
+                    'txid' => $txid,
+                    'invoice_id' => $invoice->id,
+                    'user_id' => $invoice->user_id,
+                    'value' => $value,
+                    'status' => $status,
+                    'payload' => json_encode($request->all()),
+                ]);
+            } catch (QueryException $e) {
+                // likely duplicate txid (unique constraint) -> ignore duplicate callback
+                DB::rollBack();
+                Log::warning('Duplicate IPN txid or payments insert failed', ['txid' => $txid, 'error' => $e->getMessage()]);
+                //return response('duplicate', 200);
+            }
 
-        // Expired
-        if($status < 0){
-            exit();
-        }
+            $user = User::where('id', $invoice->user_id)->lockForUpdate()->first();
 
-        if($value >= round($priceSatochi)){
-            // Update invoice status
-            $this->updateInvoiceStatus($code, $status);
-            if($status == 2){
-                // Correct amount paid and fully confirmed
-                // Do whatever you want here once payment is correct
-                 $user = User::find($infon->user_id);
-                 // payment Bonus
-                 //$percentage = $this->paymentBonusOn500Above1000($infon->amount);
-                // $updatedAmount = $percentage + $infon->amount;
-                $updatedAmount =  $infon->amount;
-                 $this->add_to_wallet_and_update($user,$updatedAmount);
-                 $this->recordHistory("paid $".$updatedAmount." into account",$user,"payment");
+            if (! $user) {
+                DB::rollBack();
+                Log::error('IPN user not found', ['user_id' => $invoice->user_id]);
+                //return response('user not found', 404);
+            }
 
+            // Update invoice status (use status provided by provider for traceability)
+            $invoice->status = $status;
+            $invoice->txid = $txid;
+            $invoice->save();
+            // Only credit wallet when fully confirmed status (status == 2)
+            if ($status == 2) {
+                $updatedAmount = $invoice->amount; // use your payment bonus logic if needed
+                // update wallet atomically
+                $user->wallet = $user->wallet + $updatedAmount;
+                $user->save();
+
+                // record history (still safe inside transaction)
+                $this->recordHistory("paid $".$updatedAmount." into account", $user, "payment");
+
+                // create investment if matches a package
                 $package = Package::where('price', $updatedAmount)->first();
-
-
                 if ($package) {
                     $user->investments()->create([
-                        'package_id'        => $package->id,
-                        'initial_deposit'   => $updatedAmount,
-                        'status'            => 'active',
-                        'start_date'       => now(),
-                        'last_payout_date'  => null, // No payouts yet
+                        'package_id' => $package->id,
+                        'initial_deposit' => $updatedAmount,
+                        'status' => 'active',
+                        'start_date' => now(),
+                        'last_payout_date' => null,
                     ]);
                 }
-                 $data = [
-                    'username'  => $user->username,
-                    'amount'    => $infon->amount,
-                ];
-                Mail::to(env("SUPPORT_EMAIL"))->send(new PaymentMail($data));
-                //referal bonus
-               // $this->referral_bonus($user,$infon->amount);
 
-
-
-                //test
-                // return response()->json([
-                //     'txid'=>$txid,
-                //     'secret'=>$secret,
-                //     'addr'=> $addr,
-                //     'value'=>$value,
-                //     'status'=>$status,
-                //     'amount'=> $infon->amount,
-                //     'price'=> $price,
-                //     'user'=>$user,
-                // ]);
+                // send admin email (you might want to dispatch this job after commit in production)
+                Mail::to(env("SUPPORT_EMAIL"))->send(new PaymentMail([
+                    'username' => $user->username,
+                    'amount' => $invoice->amount,
+                ]));
             }
-        }else {
-            // Buyer hasnt paid enough
-            $this->updateInvoiceStatus($code, -2);
-        }
+            Log::info('Successful payment');
+            DB::commit();
 
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('IPN processing failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            //return response('error', 500);
+        }
     }
 
 

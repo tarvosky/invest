@@ -17,22 +17,22 @@ class LicenseImageSeeder extends Seeder
     {
 
         $user =User::where('role','admin')->first();
-        // $count = 81;
-        // for($i=1;$i<=$count;$i++){
-        //     $l = LicenseImage::create([
-        //         "image" => $i.".png",
-        //         "category" => "young",
-        //         "user_id" => $user->id ,
-        //     ]);
-        // }
+         $count = 81;
+         for($i=1;$i<=$count;$i++){
+             $l = LicenseImage::create([
+                 "image" => $i.".png",
+                 "category" => "young",
+                 "user_id" => $user->id ,
+             ]);
+         }
 
-        // for($i=82;$i<=340;$i++){
-        //     $l = LicenseImage::create([
-        //         "image" => $i.".png",
-        //         "category" => "middle",
-        //         "user_id" => $user->id ,
-        //     ]);
-        // }
+         for($i=82;$i<=340;$i++){
+             $l = LicenseImage::create([
+                 "image" => $i.".png",
+                 "category" => "middle",
+                 "user_id" => $user->id ,
+             ]);
+         }
 
         // for($i=341;$i<=430;$i++){
         //     $l = LicenseImage::create([
@@ -43,14 +43,14 @@ class LicenseImageSeeder extends Seeder
         // }
 
 
-
-        for($i=431;$i<=440;$i++){
-            $l = LicenseImage::create([
-                "image" => $i.".png",
-                "category" => "young",
-                "user_id" => $user->id ,
-            ]);
-        }
+//
+//        for($i=431;$i<=440;$i++){
+//            $l = LicenseImage::create([
+//                "image" => $i.".png",
+//                "category" => "young",
+//                "user_id" => $user->id ,
+//            ]);
+//        }
 
 
     }

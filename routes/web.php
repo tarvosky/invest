@@ -61,6 +61,8 @@ Route::prefix('ajax')->group(function () {
 
 Route::prefix('home')->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about');
+    Route::get('/testimony', [App\Http\Controllers\HomeController::class, 'testimony'])->name('testimony');
     Route::get('profile', [App\Http\Controllers\HomeController::class,'profile'])->name('profile');
     Route::get('how-it-works', [App\Http\Controllers\HomeController::class,'howItWorks'])->name('howitworks');
     Route::get('coming-soon', [App\Http\Controllers\HomeController::class,'comingSoon'])->name('comingsoon');

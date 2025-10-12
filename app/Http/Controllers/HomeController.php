@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Package;
 use App\Services\CryptoData;
 use App\Services\InvestmentService;
-use App\Services\Packages;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Traits\Payment;
@@ -75,7 +75,23 @@ class HomeController extends Controller
 
         $totalCapital = $user->wallet;
 
-        return view('home', compact('bonus', 'ref_bonus', 'cryptoData','initialDeposit', 'dailyIncurred', 'totalCapital'));
+
+
+        $data = History::where('user_id',$user->id)->orderBy('id','Desc')->limit(3)->get();
+
+
+        return view('home', compact('bonus', 'ref_bonus', 'cryptoData','initialDeposit', 'dailyIncurred', 'totalCapital','data'));
+    }
+
+
+    public function about()
+    {
+        return view('home.about');
+    }
+
+    public function testimony()
+    {
+        return view('home.testimonies');
     }
 
 
@@ -149,7 +165,7 @@ class HomeController extends Controller
 
     public function packages()
     {
-        $packages = Packages::getPackages();
+        $packages = Package::all();
         return view('home.packages',compact('packages'));
     }
 

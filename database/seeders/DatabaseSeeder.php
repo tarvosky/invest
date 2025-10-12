@@ -15,12 +15,12 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         $this->call([
-          ChargeSeeder::class,
+//          ChargeSeeder::class,
               PackagesTableSeeder::class,
-              //SmsSeeder::class,
-            UserSeeder::class,
-         //   LicenseBackgroundSeeder::class,
-           // LicenseImageSeeder::class,
+//              //SmsSeeder::class,
+           UserSeeder::class,
+          //  LicenseBackgroundSeeder::class,
+      //      LicenseImageSeeder::class,
         ]);
     }
 }

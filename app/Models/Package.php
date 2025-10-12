@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use database\Investment;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

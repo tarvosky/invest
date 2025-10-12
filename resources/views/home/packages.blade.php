@@ -2,6 +2,17 @@
 @extends('layouts.app_home')
 @section('css')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.css" rel="stylesheet">
+    <style>
+        .list-unstyled {
+            padding-left: 0;
+            list-style: none;
+        }
+        .list-unstyled li {
+            margin-bottom: 5px;
+        }
+
+
+    </style>
 @endsection
 @section('content')
 
@@ -19,21 +30,26 @@
                     <div class="row">
 
                         @foreach ($packages as $package)
+
                             <div class="col-md-6 col-lg-3 mb-4">
                                 <div class="widget p-md text-center h-100 d-flex flex-column justify-content-between">
                                     <div>
                                         <h4 class="widget-title">{{ $package['name'] }}</h4>
                                         <h2 class="text-primary fw-bold mb-3">${{ number_format($package['price']) }}</h2>
                                         <h6 class="text-muted mb-3">What's Included</h6>
-                                        <div class="text-left mx-auto" style="max-width: 220px;">
-                                            <p>• Minimum Deposit: ${{ number_format($package['price']) }}</p>
-                                            <p>• ROI: {{ $package['roi'] }}</p>
-                                            <p>• {{ $package['support'] }}</p>
-                                            <p>• {{ $package['commission'] }}</p>
-                                        </div>
+
+
+
+                                        <ul class="custom-list">
+                                            <li>Minimum Deposit: ${{ number_format($package['price']) }}</li>
+                                            <li>ROI: {{ $package['roi'] }}%</li>
+                                            <li>{{ $package['support'] }}</li>
+{{--                                            <li>{{ $package['commission'] }}</li>--}}
+                                        </ul>
+
 
                                     </div>
-                                    <a href="{{ url('/payment/recharge?package=' . strtolower(explode(' ', $package['name'])[0]).'&amount='.$package['price']) }}" class="btn {{ $package['btnClass'] }} btn-block mt-3">Get Started</a>
+                                    <a href="{{ url('/payment/recharge?package=' . strtolower(explode(' ', $package['name'])[0]).'&amount='.$package['price']) }}" class="btn {{ $package['btn_class'] }} btn-block mt-3">Get Started</a>
                                 </div>
                             </div>
                         @endforeach
@@ -43,7 +59,7 @@
 
 
                     <div class="mt-3 mb-3">
-                        <a  class="btn btn-secondary " href="{{ asset('/')}}"> Back to dashboard</a>
+                        <a  class="btn btn-secondary " href="{{ asset('/home')}}"> Back to dashboard</a>
                     </div>
 
 

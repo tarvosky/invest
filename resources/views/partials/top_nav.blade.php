@@ -96,7 +96,10 @@ $user = auth()->user();
 
 
           <li >
-              <a href="{{ route('howitworks')}}" >About Us</a>
+              <a href="{{ route('about')}}" >About Us</a>
+          </li>
+          <li >
+              <a href="{{ route('testimony')}}" >Testimonies</a>
           </li>
         <li >
           <a href="{{ route('home.support')}}" >Contact Us</a>
