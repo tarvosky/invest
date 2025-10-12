@@ -52,12 +52,12 @@
           <span class="menu-text">Orders</span>
         </a>
       </li>
-      <li>
-        <a href="{{ route('admin.credit.user.form')}}" >
-          <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>
-          <span class="menu-text">Credit User</span>
-        </a>
-      </li>
+{{--      <li>--}}
+{{--        <a href="{{ route('admin.credit.user.form')}}" >--}}
+{{--          <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>--}}
+{{--          <span class="menu-text">Credit User</span>--}}
+{{--        </a>--}}
+{{--      </li>--}}
 {{--      <li>--}}
 {{--        <a href="{{ route('admin.edited.picture')}}" >--}}
 {{--          <i class="menu-icon zmdi zmdi-view-dashboard zmdi-hc-lg"></i>--}}
