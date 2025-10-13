@@ -20,9 +20,24 @@
      <div class="embed-responsive embed-responsive-16by9">
         <iframe class="embed-responsive-item" src="{{asset('video/ceo.mp4')}}"></iframe>
       </div>
+
 </div><!-- .widget-body -->
-</div><!-- .widget -->
-</div><!-- END column -->
+
+                    <div class="widget-body">
+                    <p>
+                        Founded in 2022 by Helen Decker, and recently started its online presence. {{ config('app.name') }} has built a legacy of providing high value returns for our investors. With years of combined experience in the investment industry, our team of financial analysts, business strategists, and risk management experts work together to identify businesses that are poised for growth.
+                        We specialize in pooling investor funds to capitalize on high-performing ventures, while maintaining a keen eye on risk mitigation and long-term sustainability.
+                    </p>
+                    <p> Our core values include: </p>
+                    <ul>
+                        <li>Integrity: We uphold transparency and honesty in all dealings.</li>
+                        <li>Expertise: Our team brings a wealth of knowledge and experience to every investment decision.</li>
+                        <li>Growth: Our focus is on helping investors achieve their financial goals with measurable results.</li>
+                    </ul>
+                    </p>
+                </div>
+                    </div>
+                </div>
             </div><!-- .row -->
 
 
