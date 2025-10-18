@@ -149,7 +149,7 @@
                         <p><strong>Total Expected Earnings:</strong> $<span id="totalEarnings">0.00</span></p>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-block mt-3">Submit</button>
+
                 </form>
             </div>
 

@@ -90,7 +90,6 @@
 
 
                             <div class="mt-3 mb-3">
- <a  class="btn btn-secondary " href="{{ asset('/')}}"> Back to dashboard</a>
  </div>
 
 
