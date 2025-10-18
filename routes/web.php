@@ -32,6 +32,12 @@ Auth::routes(['verify' => true]);
 Route::get('reload-captcha', [App\Http\Controllers\Auth\RegisterController::class, 'reloadCaptcha']);
 
 
+
+Route::get('/download/whitepaper', function () {
+    $filePath = public_path('whitepaper.pdf');
+    return response()->download($filePath, 'WhitePaper.pdf');
+})->name('home.white.paper');
+
 // Route::get('/', [App\Http\Controllers\HomeController::class, 'landing'])->name('landing');
 
 /**
@@ -64,6 +70,7 @@ Route::prefix('home')->group(function () {
     Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about');
     Route::get('/testimony', [App\Http\Controllers\HomeController::class, 'testimony'])->name('testimony');
     Route::get('profile', [App\Http\Controllers\HomeController::class,'profile'])->name('profile');
+    Route::post('/profile', [App\Http\Controllers\HomeController::class, 'storeProfile'])->name('profile.store');
     Route::get('how-it-works', [App\Http\Controllers\HomeController::class,'howItWorks'])->name('howitworks');
     Route::get('coming-soon', [App\Http\Controllers\HomeController::class,'comingSoon'])->name('comingsoon');
     Route::get('support', [App\Http\Controllers\HomeController::class,'support'])->name('home.support');

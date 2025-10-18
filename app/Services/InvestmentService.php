@@ -16,37 +16,37 @@ class InvestmentService
      * @param User $user
      * @return void
      */
-    public function processDailyPayouts(User $user)
-    {
-        $investments = $user->investments()->where('status', 'active')->get();
-
-        foreach ($investments as $investment) {
-            $lastPayoutDate = $investment->last_payout_date
-                ? Carbon::parse($investment->last_payout_date)->startOfDay()
-                : Carbon::parse($investment->start_date)->startOfDay();
-
-            $today = Carbon::today();
-
-            while ($lastPayoutDate->lt($today)) {
-                $dailyInterestRate = $investment->package->roi / 100 / $investment->package->duration_days;
-
-                // Simple interest (based on initial deposit)
-                $dailyInterestAmount = $investment->initial_deposit * $dailyInterestRate;
-
-                // Record the payout only if it doesn't exist
-                if (!$investment->dailyInterestPayouts()->whereDate('created_at', $lastPayoutDate->toDateString())->exists()) {
-                    $this->addDailyInterestToWallet($user, $dailyInterestAmount, $investment, $lastPayoutDate);
-                }
-
-                // Increment date
-                $lastPayoutDate->addDay();
-            }
-
-            // Update the investment's last payout date once after all missed days
-            $investment->last_payout_date = $lastPayoutDate->subDay()->toDateString(); // last actual payout day
-            $investment->save();
-        }
-    }
+//    public function processDailyPayouts(User $user)
+//    {
+//        $investments = $user->investments()->where('status', 'active')->get();
+//
+//        foreach ($investments as $investment) {
+//            $lastPayoutDate = $investment->last_payout_date
+//                ? Carbon::parse($investment->last_payout_date)->startOfDay()
+//                : Carbon::parse($investment->start_date)->startOfDay();
+//
+//            $today = Carbon::today();
+//
+//            while ($lastPayoutDate->lt($today)) {
+//                $dailyInterestRate = $investment->package->roi / 100 / $investment->package->duration_days;
+//
+//                // Simple interest (based on initial deposit)
+//                $dailyInterestAmount = $investment->initial_deposit * $dailyInterestRate;
+//
+//                // Record the payout only if it doesn't exist
+//                if (!$investment->dailyInterestPayouts()->whereDate('created_at', $lastPayoutDate->toDateString())->exists()) {
+//                    $this->addDailyInterestToWallet($user, $dailyInterestAmount, $investment, $lastPayoutDate);
+//                }
+//
+//                // Increment date
+//                $lastPayoutDate->addDay();
+//            }
+//
+//            // Update the investment's last payout date once after all missed days
+//            $investment->last_payout_date = $lastPayoutDate->subDay()->toDateString(); // last actual payout day
+//            $investment->save();
+//        }
+//    }
 
 
 

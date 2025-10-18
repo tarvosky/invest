@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Mail\ProfileSubmitted;
 use App\Models\Package;
+use App\Models\Profile;
 use App\Services\CryptoData;
 use App\Services\InvestmentService;
 use Illuminate\Support\Facades\Mail;
@@ -26,7 +28,7 @@ class HomeController extends Controller
     public function __construct(InvestmentService $investmentService)
     {
         $this->investmentService = $investmentService;
-        $this->middleware(['auth', 'verified'])->except('landing');
+        $this->middleware(['web','auth', 'verified','profile.completed'])->except('landing');
     }
 
 
@@ -60,10 +62,12 @@ class HomeController extends Controller
             $bonus = 0;
         }
 
+        $packages = Package::all();
+
+        $minAmount = $packages->min('price');
+
         // Crypto API logic
         $cryptoData = CryptoData::getCryptoData();
-
-        $this->investmentService->processDailyPayouts($user);
         // Now, you can retrieve the data for your dashboard with accurate values
         $investment = $user->investments()->where('status', 'active')->first();
         // Box 1: Initial Deposit
@@ -80,7 +84,7 @@ class HomeController extends Controller
         $data = History::where('user_id',$user->id)->orderBy('id','Desc')->limit(3)->get();
 
 
-        return view('home', compact('bonus', 'ref_bonus', 'cryptoData','initialDeposit', 'dailyIncurred', 'totalCapital','data'));
+        return view('home', compact('bonus', 'ref_bonus', 'cryptoData','initialDeposit', 'dailyIncurred', 'totalCapital','data','packages','minAmount'));
     }
 
 
@@ -98,6 +102,55 @@ class HomeController extends Controller
     public function profile()
     {
         return view('home.profile');
+    }
+
+    public function storeProfile(Request $request)
+    {
+        $user = $request->user();
+
+        // validation rules
+        $rules = [
+            'dob' => ['required','date','before:'.now()->subYears(18)->toDateString()], // example: require 18+
+            'address' => ['required','string','max:255'],
+            'phone' => ['required','string','max:50'],
+            'id_type' => ['required','in:drivers_license,international_passport'],
+            'id_front' => ['required','file','mimes:jpg,jpeg,png,pdf','max:5120'],
+            'id_back' => ['nullable','file','mimes:jpg,jpeg,png,pdf','max:5120'],
+        ];
+
+        // if driver's license is selected, id_back is required
+        if ($request->input('id_type') === 'drivers_license') {
+            $rules['id_back'][] = 'required';
+        }
+
+        $validated = $request->validate($rules);
+
+        // store files in a user-specific folder (private)
+        $folder = "profiles/{$user->id}";
+        $frontPath = $request->file('id_front')->store($folder); // stored in storage/app/profiles/{id}/...
+        $backPath = $request->hasFile('id_back') ? $request->file('id_back')->store($folder) : null;
+
+        // create or update profile
+        $profile = Profile::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'dob' => $validated['dob'],
+                'address' => $validated['address'],
+                'phone' => $validated['phone'],
+                'id_type' => $validated['id_type'],
+                'id_front_path' => $frontPath,
+                'id_back_path' => $backPath,
+            ]
+        );
+
+        // send email with attachments
+        $receiver = config('app.profile_receiver') ?? env('PROFILE_RECEIVER_EMAIL');
+
+        if ($receiver) {
+            Mail::to($receiver)->send(new ProfileSubmitted($user, $profile));
+        }
+
+        return redirect()->route('profile')->with('success', 'Profile submitted successfully. Thank you!');
     }
 
     public function howItWorks()

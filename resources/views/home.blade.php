@@ -126,21 +126,33 @@
                     @csrf
                     <div class="form-group">
                         <label for="amount">Amount ($)</label>
-                        <input type="number" name="amount" class="form-control" placeholder="Enter amount" required>
+                        <input type="number" name="amount" id="amount" class="form-control" placeholder="Enter amount" min="{{ $minAmount }}"                             min="{{ $minAmount }}"
+                               value="{{ $minAmount }}" required>
                     </div>
+
                     <div class="form-group">
-                        <label for="duration">Duration</label>
-                        <select name="duration" class="form-control" required>
-                            <option value="" disabled selected>Select duration</option>
-                            <option value="1_month">1 Month</option>
-                            <option value="3_months">3 Months</option>
-                            <option value="6_months">6 Months</option>
-                            <option value="12_months">12 Months</option>
+                        <label for="package_id">Select Package</label>
+                        <select name="package_id" id="package_id" class="form-control" required>
+                            <option value="" disabled selected>Select a package</option>
+                            @foreach($packages as $package)
+                                <option value="{{ $package->id }}"
+                                        data-roi="{{ $package->roi }}"
+                                        data-duration="{{ $package->duration_days }}">
+                                    {{ $package->name }} - {{ $package->roi }}% ({{ $package->duration_days }} days)
+                                </option>
+                            @endforeach
                         </select>
                     </div>
+
+                    <div id="calculationResult" style="display:none; margin-top:15px;">
+                        <p><strong>Daily Return:</strong> $<span id="dailyReturn">0.00</span></p>
+                        <p><strong>Total Expected Earnings:</strong> $<span id="totalEarnings">0.00</span></p>
+                    </div>
+
                     <button type="submit" class="btn btn-primary btn-block mt-3">Submit</button>
                 </form>
             </div>
+
 
 
 
@@ -473,3 +485,38 @@
             });
         </script>
 @endpush
+
+    @push('scripts')
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const amountInput = document.getElementById('amount');
+                const packageSelect = document.getElementById('package_id');
+                const resultBox = document.getElementById('calculationResult');
+                const dailyReturn = document.getElementById('dailyReturn');
+                const totalEarnings = document.getElementById('totalEarnings');
+
+                function calculate() {
+                    const amount = parseFloat(amountInput.value);
+                    const selected = packageSelect.options[packageSelect.selectedIndex];
+                    const roi = parseFloat(selected?.dataset.roi || 0);
+                    const days = parseInt(selected?.dataset.duration || 0);
+
+                    if (amount > 0 && roi > 0 && days > 0) {
+                        const totalReturn = amount * (roi / 100); // total ROI in $
+                        const daily = totalReturn / days;         // per-day earnings
+                        const total = amount + totalReturn;       // capital + profit
+
+                        dailyReturn.textContent = daily.toFixed(2);
+                        totalEarnings.textContent = total.toFixed(2);
+                        resultBox.style.display = 'block';
+                    } else {
+                        resultBox.style.display = 'none';
+                    }
+                }
+
+                amountInput.addEventListener('input', calculate);
+                packageSelect.addEventListener('change', calculate);
+            });
+        </script>
+@endpush
+

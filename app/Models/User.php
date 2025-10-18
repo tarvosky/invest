@@ -53,6 +53,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Investment::class);
     }
 
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+
     public function statements()
     {
         return $this->hasMany(Statement::class);
@@ -232,6 +239,19 @@ public function getReferralLinkAttribute()
 {
     return $this->referral_link = route('register', ['ref' => $this->username]);
 }
+
+
+    public function profile()
+    {
+        return $this->hasOne(\App\Models\Profile::class);
+    }
+
+
+    public function hasCompletedProfile(): bool
+    {
+        return $this->profile()->exists();
+    }
+
 
 
 

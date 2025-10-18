@@ -69,7 +69,8 @@
   <div style="margin-top:10px"class="wrap p-t-0 mt-3">
     <footer class="app-footer">
       <div class="clearfix">
-        <div class="copyright pull-left">Copyright <span style="text-transform: uppercase">{{ env('APP_NAME') }} </span> 2021 &copy;</div>
+        <div class="copyright pull-left">Copyright <span style="text-transform: uppercase">{{ env('APP_NAME') }} </span> <?php $currentYear = date('Y');
+                                                                                                                         echo $currentYear;?> &copy;</div>
       </div>
     </footer>
   </div>

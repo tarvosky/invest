@@ -99,13 +99,13 @@ $user = auth()->user();
               <a href="{{ route('about')}}" >About Us</a>
           </li>
           <li >
-              <a href="{{ route('testimony')}}" >Testimonies</a>
+              <a href="{{ route('testimony')}}" >Testimonials</a>
           </li>
         <li >
           <a href="{{ route('home.support')}}" >Contact Us</a>
         </li>
         <li >
-          <a href="{{ route('home.support')}}" >White Paper</a>
+          <a href="{{ route('home.white.paper')}}" >White Paper</a>
         </li>
 {{--        <li >--}}
 {{--          <a>Wallet  <span id="wallet"></span>  <i onClick='clickWallet()' class="fas fa-refresh text-white"></i></a>--}}
