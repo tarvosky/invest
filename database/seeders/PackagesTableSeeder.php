@@ -23,6 +23,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 4.00,
+                'status' => true,
                 'btn_class' => 'btn-danger'
             ],
             [
@@ -32,6 +33,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 4.00,
+                'status' => true,
                 'btn_class'=> 'btn-danger'
             ],
             [
@@ -41,6 +43,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 3.00,
+                'status' => true,
                 'btn_class' => 'btn-info'
             ],
             [
@@ -50,6 +53,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 2.00,
+                'status' => true,
                 'btn_class' => 'btn-warning'
             ],
             [
@@ -59,6 +63,7 @@ class PackagesTableSeeder extends Seeder
                 'duration_days' => 30,
                 'support_details' => 'Support Response within 2 days',
                 'commission' => 0.00,
+                'status' => true,
                 'btn_class' => 'btn-success'
             ],
         ];

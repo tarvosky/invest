@@ -3,11 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Faker\Generator as Faker;
-
 
 class UserSeeder extends Seeder
 {
@@ -33,13 +32,21 @@ class UserSeeder extends Seeder
                 'username' => "testuser",
                 'email' => 'ethancrane44@protonmail.com',
                 'role' => 'user',
-                'wallet' => $faker->numberBetween(10000, 100000),
+                'wallet' => 0,
                 'password' => Hash::make("Zkn+>64/k<uD$<h4"),
+            ],
+            [
+                'name' => $faker->name,
+                'username' => "Derek18",
+                'email' => 'DerekBenedit@aol.com',
+                'role' => 'user',
+                'wallet' => 0,
+                'password' => Hash::make("DerekBenedit@@@1"),
             ],
         ];
 
-        // Loop through the users and create or update them
         foreach ($usersToSeed as $userData) {
+            // Create or update the user
             $user = User::updateOrCreate(
                 ['email' => $userData['email']],
                 $userData
@@ -47,6 +54,19 @@ class UserSeeder extends Seeder
 
             // Mark the email as verified
             $user->markEmailAsVerified();
+
+            // Check if profile exists — if not, create it
+            Profile::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'dob' => $faker->date(),
+                    'address' => $faker->address,
+                    'phone' => $faker->phoneNumber,
+                    'id_type' => 'international_passport',
+                    'id_front_path' => null,
+                    'id_back_path' => null,
+                ]
+            );
         }
     }
 }

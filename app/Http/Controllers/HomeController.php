@@ -62,7 +62,7 @@ class HomeController extends Controller
             $bonus = 0;
         }
 
-        $packages = Package::all();
+        $packages = Package::where("status", 1)->get();
 
         $minAmount = $packages->min('price');
 
@@ -103,6 +103,16 @@ class HomeController extends Controller
     {
         return view('home.profile');
     }
+
+
+
+    public function profileDetails()
+    {
+        $user = auth()->user();
+        $profile = $user->profile;
+        return view('home.profile-details', compact('profile'));
+    }
+
 
     public function storeProfile(Request $request)
     {

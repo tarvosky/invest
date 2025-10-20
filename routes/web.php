@@ -70,6 +70,7 @@ Route::prefix('home')->group(function () {
     Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about');
     Route::get('/testimony', [App\Http\Controllers\HomeController::class, 'testimony'])->name('testimony');
     Route::get('profile', [App\Http\Controllers\HomeController::class,'profile'])->name('profile');
+    Route::get('profile-details', [App\Http\Controllers\HomeController::class,'profileDetails'])->name('profile.details');
     Route::post('/profile', [App\Http\Controllers\HomeController::class, 'storeProfile'])->name('profile.store');
     Route::get('how-it-works', [App\Http\Controllers\HomeController::class,'howItWorks'])->name('howitworks');
     Route::get('coming-soon', [App\Http\Controllers\HomeController::class,'comingSoon'])->name('comingsoon');

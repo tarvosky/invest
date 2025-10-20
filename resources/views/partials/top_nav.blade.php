@@ -107,6 +107,9 @@ $user = auth()->user();
         <li >
           <a href="{{ route('home.white.paper')}}" >White Paper</a>
         </li>
+          <li >
+              <a href="{{ route('profile.details')}}" >Profile</a>
+          </li>
 {{--        <li >--}}
 {{--          <a>Wallet  <span id="wallet"></span>  <i onClick='clickWallet()' class="fas fa-refresh text-white"></i></a>--}}
 
