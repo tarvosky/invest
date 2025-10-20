@@ -65,7 +65,7 @@
         <div class="col-md-6 mb-4">
             <div class="widget">
                 <header class="widget-header">
-                    <h4 class="widget-title">Testimonial (within 2 weeks)</h4>
+                    <h4 class="widget-title">Testimonial (within 1 month)</h4>
                 </header>
                 <hr class="widget-separator">
                 <div class="widget-body">
