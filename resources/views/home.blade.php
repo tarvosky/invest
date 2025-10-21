@@ -34,7 +34,7 @@
             <div class="widget p-md stats-widget">
                 <div class="widget-body clearfix">
                     <div class="pull-left">
-                        <h4 class="widget-title">Current Daily Incurred</h4>
+                        <h4 class="widget-title">Daily Gain</h4>
                         <h2 class="text-success fw-bold">${{ number_format($dailyIncurred,2) }}</h2>
                     </div>
                     <span class="pull-right big-icon watermark"><i class="fa fa-chart-line"></i></span>
