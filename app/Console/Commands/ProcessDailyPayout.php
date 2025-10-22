@@ -23,7 +23,7 @@ class ProcessDailyPayout extends Command
                 foreach ($users as $user) {
                     // process each user's investments
                     foreach ($user->investments as $investment) {
-                        if ($investment->status !== 'active') {
+                        if ($investment->status !== 'active' || !$investment->package) {
                             continue;
                         }
 
