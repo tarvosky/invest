@@ -16,27 +16,27 @@ class ProcessDailyPayout extends Command
         $this->info('Starting daily payout process...');
 
         // Process in chunks to avoid memory issues on large datasets
-//        User::whereNotNull('email_verified_at')
-//            ->whereHas('investments', fn($q) => $q->where('status', 'active'))
-//            ->with(['investments.package']) // eager load investments and package
-//            ->chunkById(100, function ($users) {
-//                foreach ($users as $user) {
-//                    // process each user's investments
-//                    foreach ($user->investments as $investment) {
-//                        if ($investment->status !== 'active') {
-//                            continue;
-//                        }
-//
-//                        $dailyInterestRate = $investment->package->roi / 100 / $investment->package->duration_days;
-//                        $dailyInterestAmount = $investment->initial_deposit * $dailyInterestRate;
-//
-//                        $this->processInvestmentPayout($user, $investment, $dailyInterestAmount);
-//                    }
-//                }
-//            });
-//
-//        $this->info(' Daily payouts processed.');
-//        return Command::SUCCESS;
+        User::whereNotNull('email_verified_at')
+            ->whereHas('investments', fn($q) => $q->where('status', 'active'))
+            ->with(['investments.package']) // eager load investments and package
+            ->chunkById(100, function ($users) {
+                foreach ($users as $user) {
+                    // process each user's investments
+                    foreach ($user->investments as $investment) {
+                        if ($investment->status !== 'active') {
+                            continue;
+                        }
+
+                        $dailyInterestRate = $investment->package->roi / 100 / $investment->package->duration_days;
+                        $dailyInterestAmount = $investment->initial_deposit * $dailyInterestRate;
+
+                        $this->processInvestmentPayout($user, $investment, $dailyInterestAmount);
+                    }
+                }
+            });
+
+        $this->info(' Daily payouts processed.');
+        return Command::SUCCESS;
     }
 
     protected function processInvestmentPayout(User $user, $investment, $amount)
